@@ -28,12 +28,16 @@ export TOKPORTAL_API_KEY=sk_your_key_here
 tokportal get-current-user
 tokportal get-credit-balance
 
-# create a 1-video TikTok bundle in the USA and capture its id
-BUNDLE_ID=$(tokportal create-bundle --body '{"bundle_type":"account_and_videos","platform":"tiktok","country":"USA","videos_quantity":1}' | jq -r .data.id)
+# create a 1-video TikTok bundle in the USA and capture its id (credits are debited here)
+BUNDLE_ID=$(tokportal create-bundle --body '{"bundle_type":"account_and_videos","platform":"tiktok","country":"USA","title":"US launch","videos_quantity":1}' | jq -r .data.id)
 
-# upload the video from disk, configure slot 1, publish
-VIDEO_URL=$(tokportal upload-video-direct --file ./launch.mp4 --bundle_id "$BUNDLE_ID" | jq -r .data.url)
-tokportal configure-bundle-video --id "$BUNDLE_ID" --position 1 --body "{\"video_url\":\"$VIDEO_URL\",\"caption\":\"Day 1\"}"
+# upload the video from disk -> public_url
+VIDEO_URL=$(tokportal upload-video-direct --file ./launch.mp4 --bundle_id "$BUNDLE_ID" | jq -r .data.public_url)
+
+# configure the account profile + video slot 1, then publish
+tokportal configure-bundle-account --id "$BUNDLE_ID" --body '{"username":"mybrand.us","visible_name":"My Brand","biography":"Official account"}'
+tokportal configure-bundle-video --id "$BUNDLE_ID" --position 1 --body "{\"video_type\":\"video\",\"video_url\":\"$VIDEO_URL\",\"description\":\"Day 1 #launch\",\"target_publish_date\":\"2026-09-01\"}"
+tokportal get-bundle-publish-readiness --id "$BUNDLE_ID"
 tokportal publish-bundle --id "$BUNDLE_ID"
 
 # follow progress
