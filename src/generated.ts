@@ -327,7 +327,7 @@ export const COMMANDS: CliCommandDefinition[] = [
   {
     "name": "add-edit-slots",
     "operationId": "addEditSlots",
-    "description": "Add edit slots to a bundle",
+    "description": "Add VIDEO-editing slots to a bundle",
     "method": "POST",
     "path": "/bundles/{id}/add-edit-slots",
     "idempotencyPolicy": "standard",
@@ -533,7 +533,8 @@ export const COMMANDS: CliCommandDefinition[] = [
         "binary": false,
         "schema": {
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description": "Publish the bundle once the import has configured at least one row. Covers the whole import — there is one publish attempt per call. A publish failure never fails the import: read auto_publish.published, auto_publish.blockers and auto_publish.adjusted_videos."
         }
       }
     ]
